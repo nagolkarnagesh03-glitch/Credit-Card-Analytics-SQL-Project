@@ -1,0 +1,207 @@
+CREATE DATABASE credit_card;
+USE credit_card;
+
+
+-- Total Records 
+SELECT COUNT(*) FROM cards;
+
+  
+
+-- Duplicate Records
+SELECT clientnum , COUNT(*)
+FROM cards
+GROUP BY clientnum
+HAVING  COUNT(*) > 1 ;  
+
+
+
+-- Null Values
+SELECT * 
+FROM cards
+WHERE  Education_Level IS NULL
+        OR Marital_Status IS NULL
+        OR Income_Category IS NULL ;
+        
+-- Unknown Values
+SELECT education_level , COUNT(*)
+FROM cards
+GROUP BY education_level;
+
+SELECT marital_status , COUNT(*)
+FROM cards
+GROUP BY marital_status ;
+
+SELECT income_category , COUNT(*)
+FROM cards
+GROUP BY income_category;
+
+
+
+--  Negative values
+SELECT * 
+FROM cards
+WHERE credit_limit < 0 OR total_trans_amt < 0 ;
+
+
+
+-- highest credit limit
+SELECT clientnum , credit_limit 
+FROM cards
+ORDER BY credit_limit DESC 
+LIMIT 10 ; 
+
+
+-- KPIS 
+-- total customers
+SELECT COUNT(*) AS total_customers
+FROM cards;  
+
+
+-- Churn Rate
+SELECT 
+      SUM(CASE WHEN  attrition_flag = 'Attrited Customer' THEN 1 ELSE 0 END) * 100.0 / COUNT(*) as churn_rate
+FROM cards;
+
+
+-- Total Transaction amount
+SELECT SUM(total_trans_amt)  as total_transaction
+FROM cards;
+
+
+
+-- avg credit limit
+SELECT AVG(credit_limit)
+FROM cards; 
+
+
+-- gender distribution by gender
+SELECT gender , COUNT(*)
+FROM cards
+GROUP BY gender ;
+
+
+-- Customers by education
+SELECT  Education_Level , COUNT(*)
+FROM cards
+GROUP BY Education_Level ;
+
+
+
+-- customers by income category
+SELECT  Income_Category , COUNT(*) as customers
+FROM cards
+GROUP BY Income_Category 
+ORDER BY customers DESC ;
+
+
+
+-- card category distribution
+SELECT  Card_Category , COUNT(*)
+FROM cards
+GROUP BY Card_Category ;
+
+
+-- churn by gender
+SELECT gender , COUNT(*) as churn_customers
+FROM cards
+WHERE  Attrition_Flag = 'Attrited Customer'
+GROUP BY gender ;
+
+
+
+-- churn by card type
+SELECT card_category , 
+       SUM(CASE WHEN Attrition_Flag = 'Attrited Customer' THEN 1 ELSE 0 END) * 100.0 / COUNT(*) as churn_rate
+FROM cards
+GROUP BY card_category ;
+
+
+-- Average Credit Limit by Card Category
+SELECT  Card_Category , AVG(Credit_Limit) as avg_credit_limit
+FROM cards
+GROUP BY card_category ;
+ 
+ 
+ 
+ -- Highest Spending Customers
+ SELECT clientnum , Total_Trans_Amt
+ FROM cards
+ ORDER BY Total_Trans_Amt DESC
+ LIMIT 10;
+ 
+ 
+ 
+ -- Most Active Customers
+ SELECT clientnum , total_trans_amt
+ FROM cards
+ ORDER BY total_trans_amt DESC
+ LIMIT 10 ;
+ 
+ 
+ 
+ -- Top Spending Customer in Each Card Category
+ WITH cte as
+ (
+ SELECT  clientnum ,card_category,total_trans_amt,
+         ROW_NUMBER () OVER (PARTITION BY card_category ORDER BY total_trans_amt DESC ) as rn
+         FROM cards
+ )
+ SELECT * FROM cte
+ WHERE rn = 1 ;
+ 
+ 
+ 
+ -- Credit Utilization Segments
+ SELECT CASE 
+            WHEN Avg_Utilization_Ratio < 0.3 THEN 'Low'
+            WHEN Avg_Utilization_Ratio < 0.7 THEN 'Medium'
+            ELSE 'High' END as utilization_segment,
+            COUNT(*) as customers
+FROM cards 
+GROUP BY utilization_segment;
+
+
+-- Age Group Analysis
+SELECT CASE 
+           WHEN  Customer_Age BETWEEN 20 AND 30 THEN '20-30'
+           WHEN  Customer_Age BETWEEN 31 AND 40 THEN '31-40'
+           WHEN  Customer_Age BETWEEN 41 AND 50 THEN '41-50'
+ELSE '50+' END AS age_group,
+COUNT(*) customers
+FROM cards
+GROUP BY age_group ;
+
+
+
+-- Churn Rate by Age Group
+SELECT CASE
+           WHEN customer_age BETWEEN 20 AND 30 THEN '20-30'
+           WHEN customer_age BETWEEN 31 AND 40 THEN '31-40'
+           WHEN customer_age BETWEEN 41 AND 50 THEN '41-50'
+           ELSE '50+'
+		   END AS age_group,
+SUM(CASE 
+         WHEN Attrition_Flag = 'Attrited Customer' THEN 1 ELSE 0 END )* 100.0 / COUNT(*) AS churn_rate
+         FROM cards
+         GROUP BY age_group ;
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+ 
+         
+
