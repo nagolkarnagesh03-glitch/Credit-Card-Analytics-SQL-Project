@@ -156,10 +156,9 @@ Or paste queries directly into **MySQL Workbench**, **DBeaver**, or any SQL clie
 
 ## 👤 Author
 
-**[Your Name]**  
+**Nagesh Nagolkar**  
 Aspiring Data Analyst | SQL • Python • Excel  
-📧 [your.email@example.com]  
-🔗 [LinkedIn Profile URL]
+📧 nagolkarnagesh03@gmail.com
 
 ---
 
